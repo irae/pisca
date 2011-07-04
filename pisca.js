@@ -88,9 +88,11 @@
 		while (!(stop).test(curnode.nodeName)) {
 			curnode=curnode.parentNode;
 		}
-		// Condidions to do this only on links to your own app
-		// if you want all links, use if('href' in curnode) instead.
-		if('href' in curnode && ( curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host) ) ) {
+		if(
+			'href' in curnode && // is a link
+			curnode.href.replace(location.href,'').indexOf('#') && // is not an anchor
+			( curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host) ) // is either relative or on same domain
+		) {
 			e.preventDefault();
 			getPage(curnode.href);
 		}

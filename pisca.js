@@ -83,8 +83,9 @@
 		}
 	}, false);
 
-	document.addEventListener('click', function(e) {
-		var curnode=e.target, stop=/^(a|html)$/i;
+	document.addEventListener('click', function(event) {
+		if(event.button) {return;} // firefox bug with delegation https://github.com/jquery/jquery/commit/150e44cddaa606f9299d4e44ea8a0c01ad8f7166
+		var curnode=event.target, stop=/^(a|html)$/i;
 		while (!(stop).test(curnode.nodeName)) {
 			curnode=curnode.parentNode;
 		}
@@ -93,7 +94,7 @@
 			curnode.href.replace(location.href,'').indexOf('#') && // is not an anchor
 			( curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host) ) // is either relative or on same domain
 		) {
-			e.preventDefault();
+			event.preventDefault();
 			getPage(curnode.href);
 		}
 	},false);

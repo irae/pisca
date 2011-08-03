@@ -23,9 +23,7 @@
 		location=document.location,
 		initialUrl = location.href,
 		currentUrl = initialUrl,
-		popped = ('state' in window.history),
-		ispoping=false;
-
+		popped = ('state' in window.history);
 
 	function writeHTML(html) {
 		divState.innerHTML = html;
@@ -53,8 +51,6 @@
 					stateObj.pageHtml = text;
 				}
 				window.history.pushState(stateObj,'',currentUrl);
-			} else {
-				ispoping = false;
 			}
 	    }
 	}
@@ -85,14 +81,16 @@
 
 	document.addEventListener('click', function(event) {
 		if(event.button) {return;} // firefox bug with delegation https://github.com/jquery/jquery/commit/150e44cddaa606f9299d4e44ea8a0c01ad8f7166
-		var curnode=event.target, stop=/^(a|html)$/i;
+		var curnode=event.target, stop=/^(a|html)$/i, chref;
 		while (!(stop).test(curnode.nodeName)) {
 			curnode=curnode.parentNode;
 		}
 		if(
 			'href' in curnode && // is a link
-			curnode.href.replace(location.href,'').indexOf('#') && // is not an anchor
-			( curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host) ) // is either relative or on same domain
+			(chref=curnode.href).replace(location.href,'').indexOf('#') && // is not an anchor
+			(
+				!(/^[a-z\+\.\-]+:/i).test(chref) ||                       // either does not have a proper scheme (relative links)
+				chref.indexOf(location.protocol+'//'+location.host)===0 ) // or is in the same protocol and domain
 		) {
 			event.preventDefault();
 			getPage(curnode.href);
